@@ -68,28 +68,55 @@ export async function generateIdea(
   theme: string,
   constraints: string
 ): Promise<IdeaResult[]> {
-  const raw = await callOllama(
-    'You are a senior hackathon strategist and former winner. Return ONLY a valid JSON array of exactly 3 ideas with no markdown fences or extra text.',
-    `Generate exactly 3 distinct, highly-technical hackathon project ideas.
+  const ideaTypes = [
+    'that uses Agentic AI (autonomous agents, LLM orchestration)',
+    'that solves a deep real-world pain point with a data-driven approach',
+    'with a creative UX angle or novel interaction model',
+  ];
+
+  const singleIdeaPrompt = (angle: string) =>
+    `Generate ONE hackathon project idea ${angle}.
 Theme: "${theme}"
 Constraints: "${constraints || 'none'}"
 
-Focus on modern patterns that win hackathons (e.g., Agentic AI, robust realtime architectures, solving deep technical or real-world pain points).
+Return ONLY a JSON object (not an array) with exactly these fields:
+{
+  "name": "short catchy project name",
+  "problem": "1-2 sentence real-world problem",
+  "solution": "2-3 sentence technical solution emphasizing the wow factor",
+  "techStack": ["Tech1", "Tech2", "Tech3", "Tech4"],
+  "mvpScope": "what the working MVP demonstrates in 48 hours"
+}`;
 
-Return exactly this JSON shape (an array of 3 objects):
-[
-  {
-    "name": "short catchy project name",
-    "problem": "1-2 sentence real-world problem",
-    "solution": "2-3 sentence technical solution description emphasizing the 'wow' factor",
-    "techStack": ["Tech1", "Tech2", "Tech3", "Tech4"],
-    "mvpScope": "what the working MVP will demonstrate in 48 hours"
-  }
-]`,
-    true
+  // Call Ollama 3 times in parallel, each requesting exactly ONE object (not an array)
+  const results = await Promise.allSettled(
+    ideaTypes.map(angle =>
+      callOllama(
+        'You are a senior hackathon strategist. Return ONLY a valid JSON object with no markdown, no arrays, and no extra text.',
+        singleIdeaPrompt(angle),
+        true
+      ).then(raw => parseJSON<IdeaResult>(raw))
+    )
   );
-  return parseJSON<IdeaResult[]>(raw);
+
+  const ideas: IdeaResult[] = [];
+  for (const result of results) {
+    if (result.status === 'fulfilled' && result.value?.name && result.value?.solution) {
+      // Ensure techStack is always an array
+      if (!Array.isArray(result.value.techStack)) {
+        result.value.techStack = [];
+      }
+      ideas.push(result.value);
+    }
+  }
+
+  if (ideas.length === 0) {
+    throw new Error('AI did not return any valid project ideas. Make sure Ollama is running and try again.');
+  }
+
+  return ideas;
 }
+
 
 // ── Task Generator ────────────────────────────
 export interface TaskResult {
