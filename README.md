@@ -1,20 +1,41 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# ⚡ CrackHack — Hackathon Copilot
 
-# Run and deploy your AI Studio app
+Your AI-powered command center for winning hackathons in 48 hours.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/temp/1
+- 🧠 **Idea Copilot** — Generate 3 distinct, trend-driven hackathon ideas using a local AI model
+- 📋 **Task Manager** — Auto-generate and track your project tasks
+- 📦 **Submission Assistant** — Polish your pitch and export it as a PDF
+- 📊 **Dashboard** — Live countdown timer and project progress tracker
+- 🔍 **Hack History Analyzer** — Query past hackathon data for insights
+- 💬 **AI Expert Chat** — Multi-turn conversation with your personal hackathon mentor
+
+## Tech Stack
+
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS
+- **AI Backend:** [Ollama](https://ollama.com/) running locally (no API keys needed!)
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+**Prerequisites:** Node.js, [Ollama](https://ollama.com/)
 
+1. Install and start Ollama:
+   ```bash
+   ollama pull llama3.2
+   ollama serve
+   ```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
 3. Run the app:
-   `npm run dev`
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser at `http://localhost:5173`
+
+> **No API keys required.** All AI runs locally via Ollama.
