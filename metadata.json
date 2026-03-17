@@ -1,0 +1,9 @@
+
+{
+  "name": "CrackHack - The Ultimate Hackathon Copilot",
+  "description": "An execution-first, AI-powered platform for hackathon participants to build, organize, and ship high-quality projects efficiently. Features idea generation, task management, historical analysis, and AI-driven documentation.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
