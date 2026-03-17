@@ -39,3 +39,5 @@ Your AI-powered command center for winning hackathons in 48 hours.
 4. Open your browser at `http://localhost:5173`
 
 > **No API keys required.** All AI runs locally via Ollama.
+> > ⚡ **Prototype Notice:** This version runs on a lightweight local LLM (LLaMA 3.2 via Ollama) to ensure fast setup and offline usability during the hackathon.  
+> The architecture is designed to be model-agnostic, allowing seamless integration of more powerful models in production for improved reasoning, speed, and advanced features.
