@@ -31,6 +31,11 @@ const App: React.FC = () => {
     localStorage.setItem('crackhack_view', view);
   };
 
+  const clearProject = () => {
+    setProject(null);
+    localStorage.removeItem('crackhack_project');
+  };
+
   const updateProject = (newProject: HackathonProject) => {
     setProject(newProject);
     localStorage.setItem('crackhack_project', JSON.stringify(newProject));
@@ -41,7 +46,7 @@ const App: React.FC = () => {
       case AppView.DASHBOARD:
         return <Dashboard project={project} onNavigate={handleNavigate} />;
       case AppView.IDEA_COPILOT:
-        return <IdeaCopilot project={project} setProject={updateProject} onNavigate={handleNavigate} />;
+        return <IdeaCopilot project={project} setProject={updateProject} clearProject={clearProject} onNavigate={handleNavigate} />;
       case AppView.TASK_MANAGER:
         return <TaskManager project={project} setProject={updateProject} />;
       case AppView.SUBMISSION_ASSISTANT:

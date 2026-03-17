@@ -5,10 +5,11 @@ import { HackathonProject, AppView } from '../types';
 interface IdeaCopilotProps {
   project: HackathonProject | null;
   setProject: (project: HackathonProject) => void;
+  clearProject: () => void;
   onNavigate: (view: AppView) => void;
 }
 
-const IdeaCopilot: React.FC<IdeaCopilotProps> = ({ setProject, onNavigate }) => {
+const IdeaCopilot: React.FC<IdeaCopilotProps> = ({ project, setProject, clearProject, onNavigate }) => {
   const [theme, setTheme]           = useState('');
   const [constraints, setConstraints] = useState('');
   const [generating, setGenerating] = useState(false);
@@ -82,6 +83,31 @@ const IdeaCopilot: React.FC<IdeaCopilotProps> = ({ setProject, onNavigate }) => 
         <h1 className="text-3xl font-bold tracking-tight">Idea Copilot 💡</h1>
         <p className="text-slate-400 text-sm mt-1 font-mono">// ai-powered concept generator</p>
       </div>
+
+      {/* Active project banner */}
+      {project && (
+        <div className="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">Active Project</div>
+            <div className="text-white font-bold">{project.name}</div>
+            <div className="text-slate-400 text-xs mt-0.5">{project.theme} · {project.tasks.length} tasks</div>
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <button
+              onClick={() => onNavigate(AppView.TASK_MANAGER)}
+              className="text-xs px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition-colors"
+            >
+              View Tasks →
+            </button>
+            <button
+              onClick={clearProject}
+              className="text-xs px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-500/30 text-red-400 rounded-lg font-bold transition-colors"
+            >
+              🗑 Remove & Start Fresh
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Input card */}
       <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 space-y-5">

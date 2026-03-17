@@ -129,19 +129,49 @@ export async function generateTasks(
   solution: string
 ): Promise<TaskResult[]> {
   const raw = await callOllama(
-    'You are a hackathon project manager. Return ONLY a valid JSON array with no markdown fences or extra text.',
-    `Generate 8-10 actionable tasks for a 48-hour hackathon.
+    'You are a hackathon project manager. Return ONLY a valid JSON object with a "tasks" array field. No markdown, no extra text.',
+    `Generate 8-10 actionable development tasks for a 48-hour hackathon.
 Project: "${projectName}"
 Solution: "${solution}"
 
-Return exactly this JSON shape (array):
-[
-  { "title": "task description", "category": "Frontend | Backend | AI/ML | DevOps | Design | Research | Testing" }
-]`,
+Return ONLY this JSON shape:
+{
+  "tasks": [
+    { "title": "task description", "category": "Frontend" },
+    { "title": "task description", "category": "Backend" }
+  ]
+}
+
+Categories must be one of: Frontend, Backend, AI/ML, DevOps, Design, Research, Testing`,
     true
   );
-  return parseJSON<TaskResult[]>(raw);
+  
+  const parsed = parseJSON<any>(raw);
+
+  // Handle both { tasks: [...] } and raw array responses
+  let taskList: TaskResult[];
+  if (Array.isArray(parsed)) {
+    taskList = parsed;
+  } else if (parsed && Array.isArray(parsed.tasks)) {
+    taskList = parsed.tasks;
+  } else if (parsed && Array.isArray(parsed.task_list)) {
+    taskList = parsed.task_list;
+  } else {
+    // Last resort: try to extract any array found in the object
+    const anyArray = Object.values(parsed as object).find(v => Array.isArray(v)) as TaskResult[] | undefined;
+    taskList = anyArray ?? [];
+  }
+
+  // Filter out invalid entries
+  taskList = taskList.filter(t => t && typeof t.title === 'string' && t.title.trim());
+
+  if (taskList.length === 0) {
+    throw new Error('AI did not return any tasks. Please try again.');
+  }
+
+  return taskList;
 }
+
 
 // ── History Analyzer ──────────────────────────
 export async function analyzeHistoricalData(
